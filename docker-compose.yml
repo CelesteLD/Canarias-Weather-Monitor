@@ -1,0 +1,55 @@
+version: "3.9"
+
+services:
+  producer:
+    build: ./producer
+    container_name: weather_producer
+    environment:
+      - OWM_API_KEY=${OWM_API_KEY}
+      - SOCKET_HOST=0.0.0.0
+      - SOCKET_PORT=9999
+      - POLL_INTERVAL=60
+    ports:
+      - "9999:9999"
+    networks:
+      - canarias-net
+    restart: unless-stopped
+
+  spark:
+    build: ./spark
+    container_name: weather_spark
+    environment:
+      - SOCKET_HOST=producer
+      - SOCKET_PORT=9999
+      - FLASK_HOST=backend
+      - FLASK_PORT=5000
+    depends_on:
+      - producer
+      - backend
+    networks:
+      - canarias-net
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    container_name: weather_backend
+    ports:
+      - "5003:5000"
+    networks:
+      - canarias-net
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: weather_frontend
+    ports:
+      - "3002:80"
+    depends_on:
+      - backend
+    networks:
+      - canarias-net
+    restart: unless-stopped
+
+networks:
+  canarias-net:
+    driver: bridge
