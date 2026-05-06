@@ -33,8 +33,10 @@ services:
   backend:
     build: ./backend
     container_name: weather_backend
+    environment:
+      - OWM_API_KEY=${OWM_API_KEY}   # ← ¿tiene esto?
     ports:
-      - "5003:5000"
+      - "5001:5000"
     networks:
       - canarias-net
     restart: unless-stopped

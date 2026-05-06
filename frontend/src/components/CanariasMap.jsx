@@ -59,21 +59,19 @@ export default function CanariasMap({ weather, onSelectIsland, selectedIsland, m
     const d = weatherRef.current.find(w => w.island === name)
     if (modeRef.current === 'air') {
       const c = AQI_LEVEL[d?.aqi ?? null] ?? AQI_LEVEL[null]
-      if (!d) return `<div class="wtip-box"><b>${name}</b><br/><span style="color:#5a7090">Sin datos</span></div>`
+      if (!d) return `<div class="wtip-box"><b>${name}</b></div>`
       return `<div class="wtip-box" style="border-color:${c.stroke}">
-        <div style="color:${c.stroke};font-weight:700;font-size:13px;margin-bottom:4px">${name}</div>
-        <div>🌫️ AQI <b>${d.aqi ?? '—'}</b> — ${d.aqi_label ?? '—'}</div>
-        <div>PM2.5: <b>${d.pm2_5 ?? '—'} µg/m³</b> &nbsp; PM10: <b>${d.pm10 ?? '—'} µg/m³</b></div>
-        <div>NO₂: ${d.no2 ?? '—'} &nbsp; O₃: ${d.o3 ?? '—'} &nbsp; SO₂: ${d.so2 ?? '—'}</div>
+        <div style="color:${c.stroke};font-weight:700;font-size:13px">${name}</div>
+        <div style="margin-top:4px">AQI <b style="color:${c.stroke}">${d.aqi ?? '—'}</b> · ${d.aqi_label ?? '—'}</div>
+        <div style="color:var(--muted);font-size:11px;margin-top:2px">PM2.5: ${d.pm2_5 ?? '—'} · PM10: ${d.pm10 ?? '—'} µg/m³</div>
       </div>`
     }
     const c = WEATHER_LEVEL[d?.alert_level ?? null] ?? WEATHER_LEVEL[null]
-    if (!d) return `<div class="wtip-box"><b>${name}</b><br/><span style="color:#5a7090">Sin datos</span></div>`
+    if (!d) return `<div class="wtip-box"><b>${name}</b></div>`
     return `<div class="wtip-box" style="border-color:${c.stroke}">
-      <div style="color:${c.stroke};font-weight:700;font-size:13px;margin-bottom:4px">${name}</div>
-      <div>🌡️ <b>${d.temp?.toFixed(1)}°C</b> &nbsp; 💧 ${d.humidity}%</div>
-      <div>💨 ${d.wind_speed?.toFixed(1)} km/h &nbsp; 📊 ${d.pressure} hPa</div>
-      <div style="color:${c.stroke};font-size:11px;text-transform:capitalize;margin-top:2px">${d.weather_desc || ''}</div>
+      <div style="color:${c.stroke};font-weight:700;font-size:13px">${name}</div>
+      <div style="margin-top:4px">🌡️ <b>${d.temp?.toFixed(1)}°C</b> · <span style="text-transform:capitalize;color:var(--muted)">${d.weather_desc || ''}</span></div>
+      <div style="color:var(--muted);font-size:11px;margin-top:2px">💨 ${d.wind_speed?.toFixed(1)} km/h · 💧 ${d.humidity}%</div>
     </div>`
   }
 

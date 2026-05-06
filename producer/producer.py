@@ -5,9 +5,9 @@ import os
 import requests
 from datetime import datetime
 
-API_KEY     = os.environ.get("OWM_API_KEY", "")
-SOCKET_HOST = os.environ.get("SOCKET_HOST", "0.0.0.0")
-SOCKET_PORT = int(os.environ.get("SOCKET_PORT", 9999))
+API_KEY       = os.environ.get("OWM_API_KEY", "")
+SOCKET_HOST   = os.environ.get("SOCKET_HOST", "0.0.0.0")
+SOCKET_PORT   = int(os.environ.get("SOCKET_PORT", 9999))
 POLL_INTERVAL = int(os.environ.get("POLL_INTERVAL", 60))
 
 CITIES = [
@@ -20,8 +20,9 @@ CITIES = [
     {"name": "Valverde",                  "island": "El Hierro",      "lat": 27.8125, "lon": -17.9145},
 ]
 
-OWM_WEATHER = "https://api.openweathermap.org/data/2.5/weather"
-OWM_AIR     = "https://api.openweathermap.org/data/2.5/air_pollution"
+OWM_WEATHER  = "https://api.openweathermap.org/data/2.5/weather"
+OWM_AIR      = "https://api.openweathermap.org/data/2.5/air_pollution"
+OWM_FORECAST = "https://api.openweathermap.org/data/2.5/forecast"
 
 AQI_LABEL = {1: "Bueno", 2: "Aceptable", 3: "Moderado", 4: "Malo", 5: "Muy malo"}
 
@@ -39,12 +40,18 @@ def fetch_weather(city):
             "feels_like":   d["main"]["feels_like"],
             "humidity":     d["main"]["humidity"],
             "pressure":     d["main"]["pressure"],
-            "wind_speed":   d["wind"]["speed"] * 3.6,
+            "grnd_level":   d["main"].get("grnd_level"),        # presión a nivel del suelo
+            "wind_speed":   d["wind"]["speed"] * 3.6,           # m/s → km/h
             "wind_deg":     d["wind"].get("deg", 0),
+            "wind_gust":    d["wind"].get("gust", 0) * 3.6,     # racha m/s → km/h
+            "rain_1h":      d.get("rain", {}).get("1h", 0.0),   # mm última hora
+            "snow_1h":      d.get("snow", {}).get("1h", 0.0),   # mm última hora
             "clouds":       d["clouds"]["all"],
             "visibility":   d.get("visibility", 10000),
             "weather_id":   d["weather"][0]["id"],
             "weather_desc": d["weather"][0]["description"],
+            "sunrise":      d["sys"].get("sunrise"),
+            "sunset":       d["sys"].get("sunset"),
         }
     except Exception as e:
         print(f"[ERROR weather] {city['island']}: {e}")
@@ -77,13 +84,43 @@ def fetch_air(city):
         return None
 
 
+def fetch_forecast(city):
+    """Forecast cada 3h para las próximas 24h (8 slots)."""
+    try:
+        r = requests.get(OWM_FORECAST, params={
+            "lat": city["lat"], "lon": city["lon"],
+            "appid": API_KEY, "units": "metric", "lang": "es",
+            "cnt": 8   # próximas 24 horas (8 x 3h)
+        }, timeout=10)
+        r.raise_for_status()
+        slots = []
+        for item in r.json().get("list", []):
+            slots.append({
+                "dt":         item["dt"],                              # unix timestamp
+                "temp":       round(item["main"]["temp"], 1),
+                "feels_like": round(item["main"]["feels_like"], 1),
+                "humidity":   item["main"]["humidity"],
+                "wind_speed": round(item["wind"]["speed"] * 3.6, 1),
+                "wind_gust":  round(item["wind"].get("gust", 0) * 3.6, 1),
+                "rain_3h":    item.get("rain", {}).get("3h", 0.0),
+                "clouds":     item["clouds"]["all"],
+                "weather_desc": item["weather"][0]["description"],
+                "weather_id":   item["weather"][0]["id"],
+            })
+        return slots
+    except Exception as e:
+        print(f"[ERROR forecast] {city['island']}: {e}")
+        return []
+
+
 def serve(conn):
     print("[PRODUCER] Client connected, starting stream...")
     while True:
         batch = []
         for city in CITIES:
-            weather = fetch_weather(city)
-            air     = fetch_air(city)
+            weather  = fetch_weather(city)
+            air      = fetch_air(city)
+            forecast = fetch_forecast(city)
             if not weather:
                 continue
 
@@ -94,7 +131,7 @@ def serve(conn):
                 "lat":          city["lat"],
                 "lon":          city["lon"],
                 **weather,
-                # Calidad del aire (None si falla)
+                # Calidad del aire
                 "aqi":          air["aqi"]       if air else None,
                 "aqi_label":    air["aqi_label"] if air else None,
                 "co":           air["co"]        if air else None,
@@ -104,12 +141,17 @@ def serve(conn):
                 "pm2_5":        air["pm2_5"]     if air else None,
                 "pm10":         air["pm10"]      if air else None,
                 "nh3":          air["nh3"]       if air else None,
+                # Forecast 24h
+                "forecast":     forecast,
             }
             batch.append(record)
 
-            aqi_str = f"AQI:{air['aqi']} ({air['aqi_label']})" if air else "AQI:—"
-            print(f"[OK] {record['island']:25s} | {record['temp']:5.1f}°C | "
-                  f"{record['wind_speed']:5.1f} km/h | {aqi_str} | PM2.5:{air['pm2_5'] if air else '—'}")
+            gust_str = f"racha {weather['wind_gust']:.1f}" if weather.get('wind_gust') else ""
+            rain_str = f"lluvia {weather['rain_1h']}mm" if weather.get('rain_1h') else ""
+            aqi_str  = f"AQI:{air['aqi']}({air['aqi_label']})" if air else "AQI:—"
+            print(f"[OK] {city['island']:25s} | {weather['temp']:5.1f}°C | "
+                  f"{weather['wind_speed']:5.1f}km/h {gust_str:15s} | "
+                  f"{rain_str:12s} | {aqi_str} | fc:{len(forecast)} slots")
 
         for record in batch:
             try:
