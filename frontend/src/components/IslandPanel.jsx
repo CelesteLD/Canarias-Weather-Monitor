@@ -19,7 +19,8 @@ function Metric({ label, value, unit, highlight, small }) {
     <div style={{
       display: 'flex', flexDirection: 'column', gap: 2,
       padding: small ? '7px 10px' : '10px 12px',
-      background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8,
+      background: 'var(--flag-white)', border: '1px solid var(--border)', borderRadius: 8,
+      boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
     }}>
       <span style={{ color: 'var(--muted)', fontSize: 9, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{label}</span>
       <span style={{ color: highlight || 'var(--text)', fontSize: small ? 14 : 18, fontFamily: 'var(--font-mono)', fontWeight: 500 }}>
@@ -57,7 +58,7 @@ function ForecastChart({ forecast }) {
       <div style={{ color: 'var(--muted)', fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>
         Forecast 24h (cada 3h)
       </div>
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, padding: '10px 8px' }}>
+      <div style={{ background: 'var(--flag-white)', border: '1px solid var(--border)', borderRadius: 8, padding: '10px 8px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
         <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', overflow: 'visible' }}>
           {/* Barras de lluvia */}
           {forecast.map((f, i) => {
@@ -66,32 +67,32 @@ function ForecastChart({ forecast }) {
             return (
               <rect key={i}
                 x={tx(i) - 6} y={H - pad - bh} width={12} height={bh}
-                fill="rgba(96,165,250,0.3)" rx="2"
+                fill="rgba(0,100,200,0.15)" rx="2"
               />
             )
           })}
 
           {/* Área temperatura */}
-          <path d={areaPath} fill="rgba(56,189,248,0.08)" />
-          <path d={linePath} fill="none" stroke="#38bdf8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path d={areaPath} fill="rgba(0,154,68,0.07)" />
+          <path d={linePath} fill="none" stroke="var(--flag-green)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 
           {/* Puntos y etiquetas */}
           {forecast.map((f, i) => (
             <g key={i}>
-              <circle cx={tx(i)} cy={ty(f.temp)} r="2.5" fill="#38bdf8" />
+              <circle cx={tx(i)} cy={ty(f.temp)} r="2.5" fill="var(--flag-green)" />
               <text x={tx(i)} y={ty(f.temp) - 6} textAnchor="middle"
-                fill="#38bdf8" fontSize="8" fontFamily="monospace">
+                fill="#007a35" fontSize="8" fontFamily="monospace">
                 {f.temp.toFixed(0)}°
               </text>
               {/* Hora */}
               <text x={tx(i)} y={H - 4} textAnchor="middle"
-                fill="rgba(255,255,255,0.3)" fontSize="7.5" fontFamily="monospace">
+                fill="rgba(0,0,0,0.35)" fontSize="7.5" fontFamily="monospace">
                 {new Date(f.dt * 1000).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
               </text>
               {/* Lluvia si hay */}
               {f.rain_3h > 0 && (
                 <text x={tx(i)} y={H - 14} textAnchor="middle"
-                  fill="#60a5fa" fontSize="7" fontFamily="monospace">
+                  fill="#2563eb" fontSize="7" fontFamily="monospace">
                   {f.rain_3h.toFixed(1)}
                 </text>
               )}
@@ -100,7 +101,7 @@ function ForecastChart({ forecast }) {
 
           {/* Línea de lluvia legend */}
           {rains.some(r => r > 0) && (
-            <text x={W - 4} y={H - 14} textAnchor="end" fill="rgba(96,165,250,0.6)" fontSize="7" fontFamily="monospace">mm</text>
+            <text x={W - 4} y={H - 14} textAnchor="end" fill="rgba(37,99,235,0.5)" fontSize="7" fontFamily="monospace">mm</text>
           )}
         </svg>
 
@@ -219,7 +220,7 @@ export default function IslandPanel({ data, mode }) {
       </div>
 
       {/* Condición */}
-      <div style={{ padding: '8px 12px', borderRadius: 8, background: 'var(--surface)', border: '1px solid var(--border)', fontSize: 12, color: 'var(--accent)', textTransform: 'capitalize', marginBottom: 10 }}>
+      <div style={{ padding: '8px 12px', borderRadius: 8, background: 'var(--flag-white)', border: '1px solid var(--border)', fontSize: 12, color: 'var(--flag-green)', textTransform: 'capitalize', marginBottom: 10, fontWeight: 600, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
         {data.weather_desc || '—'}
       </div>
 

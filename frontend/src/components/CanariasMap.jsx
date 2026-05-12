@@ -4,20 +4,20 @@ const CANARIAS_BOUNDS = [[27.4, -18.5], [29.5, -13.3]]
 const ISLANDS = ['Tenerife','Gran Canaria','Lanzarote','Fuerteventura','La Palma','La Gomera','El Hierro']
 
 const WEATHER_LEVEL = {
-  0:    { fill: '#15803d', stroke: '#4ade80', fillOpacity: 0.55, hover: 0.78, label: 'Normal'  },
-  1:    { fill: '#92400e', stroke: '#fbbf24', fillOpacity: 0.60, hover: 0.82, label: 'Aviso'   },
-  2:    { fill: '#991b1b', stroke: '#f87171', fillOpacity: 0.68, hover: 0.88, label: 'Peligro' },
-  null: { fill: '#1e3a5f', stroke: '#60a5fa', fillOpacity: 0.38, hover: 0.58, label: '—'       },
+  0:    { fill: '#009A44', stroke: '#007a35', fillOpacity: 0.55, hover: 0.75, label: 'Normal'  },
+  1:    { fill: '#FFCC00', stroke: '#c49000', fillOpacity: 0.65, hover: 0.85, label: 'Aviso'   },
+  2:    { fill: '#c0392b', stroke: '#922b21', fillOpacity: 0.68, hover: 0.88, label: 'Peligro' },
+  null: { fill: '#8fbc8f', stroke: '#5a9e5a', fillOpacity: 0.38, hover: 0.58, label: '—'       },
 }
 
 // AQI 1-5 → colores
 const AQI_LEVEL = {
-  1:    { fill: '#14532d', stroke: '#4ade80', fillOpacity: 0.55, hover: 0.78, label: 'Bueno'    },
-  2:    { fill: '#1e3a5f', stroke: '#60a5fa', fillOpacity: 0.55, hover: 0.78, label: 'Aceptable'},
-  3:    { fill: '#713f12', stroke: '#fb923c', fillOpacity: 0.60, hover: 0.82, label: 'Moderado' },
-  4:    { fill: '#7c2d12', stroke: '#f87171', fillOpacity: 0.65, hover: 0.85, label: 'Malo'     },
-  5:    { fill: '#4a044e', stroke: '#e879f9', fillOpacity: 0.70, hover: 0.88, label: 'Muy malo' },
-  null: { fill: '#1e3a5f', stroke: '#60a5fa', fillOpacity: 0.38, hover: 0.58, label: '—'        },
+  1:    { fill: '#009A44', stroke: '#007a35', fillOpacity: 0.55, hover: 0.78, label: 'Bueno'    },
+  2:    { fill: '#4a90d9', stroke: '#2c6fad', fillOpacity: 0.55, hover: 0.78, label: 'Aceptable'},
+  3:    { fill: '#e8a000', stroke: '#b57800', fillOpacity: 0.60, hover: 0.82, label: 'Moderado' },
+  4:    { fill: '#c0392b', stroke: '#922b21', fillOpacity: 0.65, hover: 0.85, label: 'Malo'     },
+  5:    { fill: '#8e44ad', stroke: '#6c3483', fillOpacity: 0.70, hover: 0.88, label: 'Muy malo' },
+  null: { fill: '#8fbc8f', stroke: '#5a9e5a', fillOpacity: 0.38, hover: 0.58, label: '—'        },
 }
 
 function geojsonToLeafletPolygons(geometry) {

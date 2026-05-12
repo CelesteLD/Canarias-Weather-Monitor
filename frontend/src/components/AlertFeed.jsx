@@ -21,7 +21,7 @@ export default function AlertFeed({ alerts }) {
           <div key={i} style={{
             display: 'flex', flexDirection: 'column', gap: 3,
             padding: '8px 12px',
-            background: 'var(--surface)',
+            background: 'var(--flag-white)',
             border: `1px solid ${style.border}`,
             borderLeft: `3px solid ${style.color}`,
             borderRadius: 6,
