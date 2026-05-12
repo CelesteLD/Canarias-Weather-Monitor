@@ -79,7 +79,7 @@ export default function App() {
               return (
                 <button key={key} onClick={() => setMode(key)} style={{
                   padding: '5px 12px', borderRadius: 7, cursor: 'pointer',
-                  fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600,
+                  fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 600,
                   background: active ? p.bg : 'transparent',
                   color: active ? p.text : 'var(--muted)',
                   border: active ? `1px solid ${p.border}` : '1px solid transparent',
@@ -103,7 +103,7 @@ export default function App() {
           ].map(({ level, label, color, bg }) => (
             <div key={level} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '3px 10px', borderRadius: 7, background: bg, border: `1px solid ${color}33` }}>
               <span style={{ color, fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: 16 }}>{weatherCounts[level]}</span>
-              <span style={{ color: 'var(--muted)', fontSize: 8, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{label}</span>
+              <span style={{ color: 'var(--muted)', fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{label}</span>
             </div>
           ))}
 
@@ -119,7 +119,7 @@ export default function App() {
             return (
               <div key={aqi} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2px 7px', borderRadius: 6, background: bg, border: `1px solid ${color}33` }}>
                 <span style={{ color, fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: 13 }}>{count}</span>
-                <span style={{ color: 'var(--muted)', fontSize: 7, letterSpacing: '0.06em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{label}</span>
+                <span style={{ color: 'var(--muted)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{label}</span>
               </div>
             )
           })}
@@ -127,7 +127,7 @@ export default function App() {
           {/* LIVE */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ width: 7, height: 7, borderRadius: '50%', background: connected ? 'var(--green)' : 'var(--red)', boxShadow: `0 0 5px ${connected ? 'var(--green)' : 'var(--red)'}`, animation: 'blink 2s ease-in-out infinite' }} />
-            <span style={{ color: 'var(--muted)', fontSize: 10, whiteSpace: 'nowrap' }}>
+            <span style={{ color: 'var(--muted)', fontSize: 11, whiteSpace: 'nowrap' }}>
               {connected ? `LIVE · ${lastUpdate?.toLocaleTimeString('es-ES') || ''}` : 'DESCONECTADO'}
             </span>
           </div>
